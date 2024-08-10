@@ -1,5 +1,6 @@
 from datetime import datetime
 from asyncio import TaskGroup
+from typing import Sequence
 
 from sources import SourceResult
 import sources
@@ -30,11 +31,12 @@ class BasicSourceManager:
         results = await source.gather_data(since)
         res_dict[source_id] = results
 
-    async def gather_data(self, since: datetime) -> dict[int, list[SourceResult]]:
+    async def gather_data(self, source_ids: Sequence[int], since: datetime) -> dict[int, list[SourceResult]]:
         results: dict[int, list[SourceResult]] = {}
 
         with TaskGroup() as tg:
-            for source_id, source in self.sources.items():
+            for source_id in source_ids:
+                source = self.sources[source_id]
                 tg.create_task(self._launch_source(source, source_id, results, since))
 
         return results

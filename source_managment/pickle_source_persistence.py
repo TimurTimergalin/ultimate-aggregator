@@ -1,5 +1,6 @@
 from datetime import datetime
 from pickle import dump, load, UnpicklingError
+from typing import Sequence
 from weakref import finalize
 
 import sources
@@ -32,8 +33,8 @@ class PickleSourcePersistence:
     def remove_source(self, source_id: int) -> None:
         return self.source_manager.remove_source(source_id)
 
-    async def gather_data(self, since: datetime) -> dict[int, list[SourceResult]]:
-        return await self.source_manager.gather_data(since)
+    async def gather_data(self, source_ids: Sequence[int], since: datetime) -> dict[int, list[SourceResult]]:
+        return await self.source_manager.gather_data(source_ids, since)
 
     def finalize(self):
         with open(self.path_to_save_file, "wb") as f:
