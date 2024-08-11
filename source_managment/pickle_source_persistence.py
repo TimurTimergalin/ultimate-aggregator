@@ -2,7 +2,7 @@ from pickle import dump, load, UnpicklingError
 from typing import Sequence
 from weakref import finalize
 
-import sources
+import sources as sources_module
 from sources import SourceResult
 from .basic_source_manager import BasicSourceManager
 
@@ -27,7 +27,11 @@ class PickleSourcePersistence:
 
         return obj
 
-    def add_source(self, source: sources.Source) -> int:
+    @property
+    def sources(self) -> dict[int, sources_module.Source]:
+        return self.source_manager.sources
+
+    def add_source(self, source: sources_module.Source) -> int:
         return self.source_manager.add_source(source)
 
     def remove_source(self, source_id: int) -> None:

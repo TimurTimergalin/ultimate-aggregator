@@ -2,7 +2,7 @@ from typing import Sequence
 
 from sqlalchemy import select
 
-import sources
+import sources as sources_module
 from db import DataBase, Session
 from db import models
 from db.models import Piece
@@ -22,7 +22,20 @@ class SourceDbSync:
         self.db = db
         self.source_manager = source_manager
 
-    def add_source(self, source: sources.Source) -> int:
+    @property
+    def sources(self) -> dict[int, sources_module.Source]:
+        inner_result = self.source_manager.sources
+        result = {}
+        with self.db.session() as session:
+            for external_id, source in inner_result.items():
+                db_source = session.execute(
+                    select(models.Source).where(models.Source.external_id == external_id)
+                ).one()
+                result[db_source.id] = source
+
+        return result
+
+    def add_source(self, source: sources_module.Source) -> int:
         external_id = self.source_manager.add_source(source)
 
         with self.db.session() as session:

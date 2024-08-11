@@ -1,7 +1,7 @@
 from asyncio import TaskGroup
 from typing import Sequence
 
-import sources
+import sources as sources_module
 from sources import SourceResult
 
 
@@ -15,9 +15,13 @@ class BasicSourceManager:
 
     def __init__(self):
         self.next_id = 1
-        self.sources = {}
+        self._sources = {}
 
-    def add_source(self, source: sources.Source) -> int:
+    @property
+    def sources(self) -> dict[int, sources_module.Source]:
+        return self._sources
+
+    def add_source(self, source: sources_module.Source) -> int:
         self.sources[self.next_id] = source
         self.next_id += 1
         return self.next_id - 1
@@ -26,7 +30,7 @@ class BasicSourceManager:
         del self.sources[source_id]
 
     @staticmethod
-    async def _launch_source(source: sources.Source, source_id: int, res_dict: dict[int, list[SourceResult]]) -> None:
+    async def _launch_source(source: sources_module.Source, source_id: int, res_dict: dict[int, list[SourceResult]]) -> None:
         results = await source.gather_data()
         res_dict[source_id] = results
 
