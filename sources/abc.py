@@ -9,8 +9,9 @@ class Source(ABC):
     Абстрактный класс источников информации - объектов, собирающие информацию и сжимающие ее в кусочки
     """
 
-    def __init__(self, name):
+    def __init__(self, name, gathering_period):
         self.name = name
+        self.gathering_period = gathering_period
         self.last_gathered = datetime.now()
 
     async def gather_data(self) -> list[SourceResult]:

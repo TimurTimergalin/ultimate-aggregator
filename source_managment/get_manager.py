@@ -1,4 +1,5 @@
 from db import DataBase
+from .gathering_scheduling import SchedulingManager
 from .pickle_source_persistence import PickleSourcePersistence
 from .source_db_sync import SourceDbSync
 from .source_manager import SourceManager
@@ -11,7 +12,9 @@ def get_source_manager(*, path_to_save_file: str, db: DataBase) -> SourceManager
     :param db: объект управления sql базой данных
     :return: сконструированный менеджер
     """
-    return SourceDbSync(
-        db,
-        PickleSourcePersistence(path_to_save_file)
+    return SchedulingManager(
+        SourceDbSync(
+            db,
+            PickleSourcePersistence(path_to_save_file)
+        )
     )
