@@ -1,8 +1,8 @@
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .base import Base
 from . import source
+from .base import Base
 
 
 class Category(Base):

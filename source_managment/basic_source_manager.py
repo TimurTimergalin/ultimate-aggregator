@@ -1,9 +1,8 @@
-from datetime import datetime
 from asyncio import TaskGroup
 from typing import Sequence
 
-from sources import SourceResult
 import sources
+from sources import SourceResult
 
 
 class BasicSourceManager:
@@ -13,6 +12,7 @@ class BasicSourceManager:
     Не обладает персистентностью.
     Удовлетворяет протоколу SourceManager.
     """
+
     def __init__(self):
         self.next_id = 1
         self.sources = {}
@@ -26,17 +26,16 @@ class BasicSourceManager:
         del self.sources[source_id]
 
     @staticmethod
-    async def _launch_source(source: sources.Source, source_id: int, res_dict: dict[int, list[SourceResult]],
-                             since: datetime) -> None:
-        results = await source.gather_data(since)
+    async def _launch_source(source: sources.Source, source_id: int, res_dict: dict[int, list[SourceResult]]) -> None:
+        results = await source.gather_data()
         res_dict[source_id] = results
 
-    async def gather_data(self, source_ids: Sequence[int], since: datetime) -> dict[int, list[SourceResult]]:
+    async def gather_data(self, source_ids: Sequence[int]) -> dict[int, list[SourceResult]]:
         results: dict[int, list[SourceResult]] = {}
 
         with TaskGroup() as tg:
             for source_id in source_ids:
                 source = self.sources[source_id]
-                tg.create_task(self._launch_source(source, source_id, results, since))
+                tg.create_task(self._launch_source(source, source_id, results))
 
         return results

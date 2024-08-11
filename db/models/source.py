@@ -1,9 +1,9 @@
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .base import Base
 from . import category
 from . import piece
+from .base import Base
 
 
 class Source(Base):

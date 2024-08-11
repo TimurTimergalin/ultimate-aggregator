@@ -1,14 +1,13 @@
-from datetime import datetime
 from typing import Sequence
 
+from sqlalchemy import select
+
+import sources
 from db import DataBase, Session
+from db import models
 from db.models import Piece
 from sources import SourceResult
 from .source_manager import SourceManager
-import sources
-from db import models
-
-from sqlalchemy import select
 
 
 class SourceDbSync:
@@ -18,6 +17,7 @@ class SourceDbSync:
     обернутого менеджера идентификаторами из базы данных (на выходе) и наоборот (на входе).
     Удовлетворяет протоколу SourceManager.
     """
+
     def __init__(self, db: DataBase, source_manager: SourceManager):
         self.db = db
         self.source_manager = source_manager
@@ -55,7 +55,7 @@ class SourceDbSync:
             )
         )
 
-    async def gather_data(self, source_ids: Sequence[int], since: datetime) -> dict[int, list[SourceResult]]:
+    async def gather_data(self, source_ids: Sequence[int]) -> dict[int, list[SourceResult]]:
         with self.db.session() as session:
             external_id_to_db_source = {}
             for source_id in source_ids:
@@ -65,7 +65,7 @@ class SourceDbSync:
                 external_id = db_source.external_id
                 external_id_to_db_source[external_id] = db_source
 
-            inner_results = await self.source_manager.gather_data(list(external_id_to_db_source.keys()), since)
+            inner_results = await self.source_manager.gather_data(list(external_id_to_db_source.keys()))
             results = {}
             for external_id, result_list in inner_results.items():
                 for result in result_list:

@@ -1,8 +1,7 @@
-from .piece import Piece
-from .category import Category
-from .source import Source
 from .base import Base
-
+from .category import Category
+from .piece import Piece
+from .source import Source
 
 __all__ = [
     "Piece",

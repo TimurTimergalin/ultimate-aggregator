@@ -8,14 +8,20 @@ class Source(ABC):
     """
     Абстрактный класс источников информации - объектов, собирающие информацию и сжимающие ее в кусочки
     """
+
     def __init__(self, name):
         self.name = name
+        self.last_gathered = datetime.now()
+
+    async def gather_data(self) -> list[SourceResult]:
+        results, last_gathered = await self._gather_data()
+        self.last_gathered = last_gathered
+        return results
 
     @abstractmethod
-    async def gather_data(self, since: datetime) -> list[SourceResult]:
+    async def _gather_data(self) -> tuple[list[SourceResult], datetime]:
         """
         Ищет новую информацию
-        :param since: самая ранняя дата публикации интересующей информации
         :return: список результатов
         """
         pass

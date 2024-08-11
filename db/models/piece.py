@@ -1,9 +1,10 @@
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, ForeignKey, Text
 from datetime import datetime
 
-from .base import Base
+from sqlalchemy import String, ForeignKey, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from . import source
+from .base import Base
 
 
 class Piece(Base):

@@ -1,4 +1,3 @@
-from datetime import datetime
 from pickle import dump, load, UnpicklingError
 from typing import Sequence
 from weakref import finalize
@@ -13,6 +12,7 @@ class PickleSourcePersistence:
     Надстройка над BasicSourceManager, использующая pickle для персистентности.
     Удовлетворяет протоколу SourceManager.
     """
+
     def __init__(self, path_to_save_file: str):
         self.path_to_save_file = path_to_save_file
         self.source_manager = self.acquire_source_manager()
@@ -33,8 +33,8 @@ class PickleSourcePersistence:
     def remove_source(self, source_id: int) -> None:
         return self.source_manager.remove_source(source_id)
 
-    async def gather_data(self, source_ids: Sequence[int], since: datetime) -> dict[int, list[SourceResult]]:
-        return await self.source_manager.gather_data(source_ids, since)
+    async def gather_data(self, source_ids: Sequence[int]) -> dict[int, list[SourceResult]]:
+        return await self.source_manager.gather_data(source_ids)
 
     def finalize(self):
         with open(self.path_to_save_file, "wb") as f:
