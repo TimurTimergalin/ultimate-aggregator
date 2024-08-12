@@ -24,35 +24,29 @@ class SourceDbSync(SourceManager):
 
     @property
     def sources(self) -> dict[int, sources_module.Source]:
-        inner_result = self.source_manager.sources
-        result = {}
-        with self.db.session() as session:
-            for external_id, source in inner_result.items():
-                db_source = session.execute(
-                    select(models.Source).where(models.Source.external_id == external_id)
-                ).one()
-                result[db_source.id] = source
+        return self.source_manager.sources
 
-        return result
-
-    def add_source(self, source: sources_module.Source) -> int:
-        external_id = self.source_manager.add_source(source)
+    def add_source(self, source: sources_module.Source, enforced_id: int | None = None) -> int:
+        assert enforced_id is None
 
         with self.db.session() as session:
-            to_add = models.Source(external_id=external_id)
+            to_add = models.Source()
             session.add(to_add)
+            session.commit()
+
+        self.source_manager.add_source(source, to_add.id)
 
         return to_add.id
 
     def remove_source(self, db_source_id: int) -> None:
         with self.db.session() as session:
-            db_source = session.execute(
+            db_source, = session.execute(
                 select(models.Source).where(models.Source.id == db_source_id)
             ).first()
-            external_id = db_source.external_id
             db_source.delete()
+            session.commit()
 
-        self.source_manager.remove_source(external_id)
+        self.source_manager.remove_source(db_source_id)
 
     @staticmethod
     def save_result(db_source: models.Source, result: SourceResult, session: Session):
@@ -69,20 +63,14 @@ class SourceDbSync(SourceManager):
         )
 
     async def gather_data(self, source_ids: Sequence[int]) -> dict[int, list[SourceResult]]:
+        results = await self.source_manager.gather_data(source_ids)
         with self.db.session() as session:
-            external_id_to_db_source = {}
-            for source_id in source_ids:
-                db_source = session.execute(
+            for source_id, results_list in results:
+                db_source, = session.execute(
                     select(models.Source).where(models.Source.id == source_id)
                 ).first()
-                external_id = db_source.external_id
-                external_id_to_db_source[external_id] = db_source
+                for result in results_list:
+                    self.save_result(db_source, result, session)
+            session.commit()
 
-            inner_results = await self.source_manager.gather_data(list(external_id_to_db_source.keys()))
-            results = {}
-            for external_id, result_list in inner_results.items():
-                for result in result_list:
-                    self.save_result(external_id_to_db_source[external_id], result, session)
-                results[external_id_to_db_source[external_id].id] = result_list
-
-            return results
+        return results

@@ -19,10 +19,12 @@ class SourceManager(ABC):
         pass
 
     @abstractmethod
-    def add_source(self, source: Source) -> int:
+    def add_source(self, source: Source, enforced_id: int | None = None) -> int:
         """
         Сохраняет новый источник информации
         :param source: источник информации
+        :param enforced_id: идентификатор, который стоит присвоить добавленному ресурсу. Если не указан, менеджер
+        выберет его самостоятельно
         :return: идентификатор добавленного источника информации
         """
         pass

@@ -15,7 +15,6 @@ class Source(Base):
     __tablename__ = "source"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    external_id: Mapped[int] = mapped_column(unique=True, index=True)
 
     category_id: Mapped[int] = mapped_column(ForeignKey("category.id"))
     category: Mapped["category.Category"] = relationship(back_populates="sources")

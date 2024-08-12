@@ -32,8 +32,8 @@ class PickleSourcePersistence(SourceManager):
     def sources(self) -> dict[int, sources_module.Source]:
         return self.source_manager.sources
 
-    def add_source(self, source: sources_module.Source) -> int:
-        return self.source_manager.add_source(source)
+    def add_source(self, source: sources_module.Source, enforce_id: int | None = None) -> int:
+        return self.source_manager.add_source(source, enforce_id)
 
     def remove_source(self, source_id: int) -> None:
         return self.source_manager.remove_source(source_id)

@@ -15,17 +15,17 @@ class BasicSourceManager(SourceManager):
     """
 
     def __init__(self):
-        self.next_id = 1
         self._sources = {}
 
     @property
     def sources(self) -> dict[int, sources_module.Source]:
         return self._sources
 
-    def add_source(self, source: sources_module.Source) -> int:
-        self.sources[self.next_id] = source
-        self.next_id += 1
-        return self.next_id - 1
+    def add_source(self, source: sources_module.Source, enforced_id: int | None = None) -> int:
+        assert enforced_id is not None
+        assert enforced_id not in self._sources
+        self.sources[enforced_id] = source
+        return enforced_id
 
     def remove_source(self, source_id: int) -> None:
         del self.sources[source_id]
