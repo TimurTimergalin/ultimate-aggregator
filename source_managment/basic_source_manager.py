@@ -3,9 +3,10 @@ from typing import Sequence
 
 import sources as sources_module
 from sources import SourceResult
+from .source_manager import SourceManager
 
 
-class BasicSourceManager:
+class BasicSourceManager(SourceManager):
     """
     Базовый менеджер источников информации - хранит источники информации в оперативной памяти.
     Назначает собственные идентификаторы источникам.

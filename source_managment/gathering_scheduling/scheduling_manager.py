@@ -5,7 +5,7 @@ from .scheduler import Scheduler
 from sources import Source, SourceResult
 
 
-class SchedulingManager:
+class SchedulingManager(SourceManager):
     def __init__(self, source_manager: SourceManager):
         self.source_manager = source_manager
         self.scheduler = Scheduler(source_manager)

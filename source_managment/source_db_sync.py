@@ -10,7 +10,7 @@ from sources import SourceResult
 from .source_manager import SourceManager
 
 
-class SourceDbSync:
+class SourceDbSync(SourceManager):
     """
     Декоратор для произвольного SourceManager-а, синхронизирующая его работу с sql базой данных.
     Сохраняет все необходимое в базу данных; подменяет идентификаторы источников информации

@@ -5,9 +5,10 @@ from weakref import finalize
 import sources as sources_module
 from sources import SourceResult
 from .basic_source_manager import BasicSourceManager
+from .source_manager import SourceManager
 
 
-class PickleSourcePersistence:
+class PickleSourcePersistence(SourceManager):
     """
     Надстройка над BasicSourceManager, использующая pickle для персистентности.
     Удовлетворяет протоколу SourceManager.

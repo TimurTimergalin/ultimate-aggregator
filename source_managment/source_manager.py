@@ -1,14 +1,16 @@
-from typing import Protocol, Sequence
+from typing import Sequence
+from abc import ABC, abstractmethod
 
 from sources import Source, SourceResult
 
 
-class SourceManager(Protocol):
+class SourceManager(ABC):
     """
     Протокол менеджера источников информации - объекта, отвечающего за хранение и запуск источников информации
     """
 
     @property
+    @abstractmethod
     def sources(self) -> dict[int, Source]:
         """
         Словарь: ключи - идентификаторы, значения - источники информации
@@ -16,6 +18,7 @@ class SourceManager(Protocol):
         """
         pass
 
+    @abstractmethod
     def add_source(self, source: Source) -> int:
         """
         Сохраняет новый источник информации
@@ -24,6 +27,7 @@ class SourceManager(Protocol):
         """
         pass
 
+    @abstractmethod
     def remove_source(self, source_id: int) -> None:
         """
         Удаляет источник информации
@@ -31,6 +35,7 @@ class SourceManager(Protocol):
         """
         pass
 
+    @abstractmethod
     async def gather_data(self, source_ids: Sequence[int]) -> dict[int, list[SourceResult]]:
         """
         Запускает сбор кусочков информации
