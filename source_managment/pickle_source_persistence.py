@@ -11,7 +11,6 @@ from .source_manager import SourceManager
 class PickleSourcePersistence(SourceManager):
     """
     Надстройка над BasicSourceManager, использующая pickle для персистентности.
-    Удовлетворяет протоколу SourceManager.
     """
 
     def __init__(self, path_to_save_file: str):
