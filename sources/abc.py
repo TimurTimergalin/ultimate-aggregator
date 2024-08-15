@@ -26,3 +26,5 @@ class Source(ABC):
         :return: список результатов
         """
         pass
+
+    __default_picture__ = None
