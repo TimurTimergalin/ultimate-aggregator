@@ -15,7 +15,7 @@ async def check_username(username):
 
     url = "https://www.youtube.com/" + username
 
-    with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient() as client:
         resp = await client.get(url)
 
     if resp.status_code != 200:
@@ -54,16 +54,16 @@ class YoutubeChannelSource(Source):
         if not await check_username(username):
             raise SourceInitException("Такого пользователя не существует")
 
-        with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient() as client:
             search_url = (
-                f'https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=%40StopGameNews&type'
+                f'https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q={username}&type'
                 f'=channel&key={api_key}')
             resp = await client.get(search_url)
             if resp.status_code != 200:
                 raise SourceInitException(f"Ошибка youtube api при поиске канала: {resp.status_code}")
             resp = resp.json()
             total_results = resp["pageInfo"]["totalResults"]
-            if total_results <= 1:
+            if total_results < 1:
                 raise SourceInitException("Пользователь не найден")
             snippet = resp["items"][0]["snippet"]
             channel_id = snippet["channelId"]
@@ -78,7 +78,7 @@ class YoutubeChannelSource(Source):
             resp = resp.json()
 
             total_results = resp["pageInfo"]["totalResults"]
-            if total_results <= 1:
+            if total_results < 1:
                 raise SourceInitException("Канал не найден")
 
             uploads_playlist_id = resp["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
@@ -116,9 +116,9 @@ class YoutubeChannelSource(Source):
         playlist_items_url = (f"https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50"
                               f"&playlistId={self.uploads_playlist_id}&key={self.api_key}")
 
-        with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient() as client:
             resp = await client.get(playlist_items_url)
-            if resp.status_code != 20:
+            if resp.status_code != 200:
                 raise SourceGatherException(f"Ошибка youtube api при сборе из \"{self.name}\": {resp.status_code}")
 
             resp = resp.json()
@@ -131,10 +131,10 @@ class YoutubeChannelSource(Source):
             while not finished and "nextPageToken" in resp:
                 new_page_url = playlist_items_url + f"&pageToken={resp['nextPageToken']}"
                 resp = await client.get(new_page_url)
-                if resp.status_code != 20:
+                if resp.status_code != 200:
                     raise SourceGatherException(f"Ошибка youtube api при сборе из \"{self.name}\": {resp.status_code}")
 
-                resp = resp.json
+                resp = resp.json()
                 finished, _ = self.gather_from_page(resp["items"], result)
 
             return result, last_time
