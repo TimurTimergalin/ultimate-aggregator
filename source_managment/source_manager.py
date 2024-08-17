@@ -19,7 +19,7 @@ class SourceManager(ABC):
         pass
 
     @abstractmethod
-    def add_source(self, source: Source, enforced_id: int | None = None) -> int:
+    def add_source(self, source: Source, enforced_id: int | None = None, **kwargs) -> int:
         """
         Сохраняет новый источник информации
         :param source: источник информации

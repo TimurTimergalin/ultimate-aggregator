@@ -14,8 +14,8 @@ class SchedulingManager(SourceManager):
     def sources(self) -> dict[int, Source]:
         return self.source_manager.sources
 
-    def add_source(self, source: Source, enforced_id: int | None = None):
-        sid = self.source_manager.add_source(source, enforced_id)
+    def add_source(self, source: Source, enforced_id: int | None = None, **kwargs):
+        sid = self.source_manager.add_source(source, enforced_id, **kwargs)
         self.scheduler.schedule_gathering(sid, source)
         return sid
 

@@ -24,15 +24,17 @@ class SourceDbSync(SourceManager):
     def sources(self) -> dict[int, sources_module.Source]:
         return self.source_manager.sources
 
-    def add_source(self, source: sources_module.Source, enforced_id: int | None = None) -> int:
+    def add_source(self, source: sources_module.Source, enforced_id: int | None = None, category_id=None,
+                   **kwargs) -> int:
         assert enforced_id is None
+        assert category_id is not None  # Аргумент должен быть опциональным, иначе он не совместим с SourceManager
 
         with self.db.session() as session:
-            to_add = models.Source()
+            to_add = models.Source(category_id=category_id)
             session.add(to_add)
             session.commit()
 
-        self.source_manager.add_source(source, to_add.id)
+        self.source_manager.add_source(source, to_add.idб **kwargs)
 
         return to_add.id
 

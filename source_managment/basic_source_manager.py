@@ -20,9 +20,10 @@ class BasicSourceManager(SourceManager):
     def sources(self) -> dict[int, sources_module.Source]:
         return self._sources
 
-    def add_source(self, source: sources_module.Source, enforced_id: int | None = None) -> int:
+    def add_source(self, source: sources_module.Source, enforced_id: int | None = None, **kwargs) -> int:
         assert enforced_id is not None
         assert enforced_id not in self._sources
+        assert not kwargs
         self.sources[enforced_id] = source
         return enforced_id
 
