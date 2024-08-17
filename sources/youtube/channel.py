@@ -137,4 +137,5 @@ class YoutubeChannelSource(Source):
                 resp = resp.json()
                 finished, _ = self.gather_from_page(resp["items"], result)
 
+            self.last_gathered = finished
             return result, last_time
